@@ -1,0 +1,63 @@
+Summary: 
+- Our method is implemented in R. For the baselines we compared, some are in R 
+and others are in Python. 
+- It is very difficult to use a single enviroment and the packages may conflict. 
+It is hence highly recommend to use the "renv" to manage R packages for each 
+single algorithm, and conda or another tools to manage the python environent.
+
+
+R version: 
+- 4.2.1; 
+- OS tested: macOS and Linux; 
+
+R Packages required: 
+1) for simulation of semi-synethetic datasets:
+- dplyr
+- data.table
+- remotes
+- install the simulator by using remotes::install_github("vdorie/aciccomp/2016")
+
+2) for run the code for OUR proposed method
+- rpart
+- rpart.plot
+
+3) for QUINT
+- quint (and its dependencies below, see the supplementary files for the link)
+- partykit
+- grid
+- libcoin
+- mvtnorm
+- Formula
+
+4) for Virtual Twins
+- aVirtualTwins (and all dependencies specified in its document)
+
+5) for SIDES
+- rsides (and all dependencies specified in its document)
+
+6) for Causal Tree
+- causalTree (and all dependencies specified in its document)
+
+7) for Distill Tree
+- The source code is released at https://tiffanymtang.github.io/causalDT/index.html;
+its installation instructions are provided as follows:
+# install.packages("devtools")
+devtools::install_github("tiffanymtang/causalDT", subdir = "causalDT").
+
+However, I cannot figure out how to resolve the errors in installing this package, 
+and hence I work with the source code directly. The source code is in the
+folder "./causalDT-main/"
+
+Further, the following packages are required to run the code for Distill Tree:
+- rpart
+- rpart.plot
+- purrr
+- R.utils
+- grf
+
+8) Interation Trees
+[HERE]
+
+
+
+

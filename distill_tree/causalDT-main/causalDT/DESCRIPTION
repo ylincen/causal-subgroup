@@ -1,0 +1,38 @@
+Package: causalDT
+Title: Causal Distillation Trees
+Version: 0.0.1
+Authors@R: c(
+    person("Tiffany", "Tang", , "ttang4@nd.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-8079-6867")),
+    person("Melody", "Huang", , "melody.huang@yale.edu", role = "aut"),
+    person("Ana", "Kenney", , "anamaria.kenney@uci.edu", role = "aut")
+  )
+Description: This package provides tools to estimate interpretable subgroups in causal inference using causal distillation trees (CDT).
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
+Imports: 
+    bcf,
+    dplyr,
+    ggparty,
+    ggplot2,
+    grf,
+    partykit,
+    purrr,
+    R.utils,
+    Rcpp,
+    rlang,
+    rlearner (>= 1.1.0),
+    rpart,
+    stringr,
+    tibble,
+    tidyselect
+Remotes: 
+    xnie/rlearner
+URL: https://tiffanymtang.github.io/causalDT/
