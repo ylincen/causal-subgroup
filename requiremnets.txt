@@ -5,6 +5,11 @@ and others are in Python.
 It is hence highly recommend to use the "renv" to manage R packages for each 
 single algorithm, and conda or another tools to manage the python environent.
 
+- When we run the baselines, we either use the source code released by the authors, 
+or directly use Python/R packages that implemented these algorithms. 
+For all baselines, the main scripts for running our experiments are named as
+  run_synthetic.R (or .py)
+  run_semi.R (or. py)
 
 R version: 
 - 4.2.1; 
@@ -22,21 +27,25 @@ R Packages required:
 - rpart.plot
 
 3) for QUINT
-- quint (and its dependencies below, see the supplementary files for the link)
+- quint (and its dependencies below)
 - partykit
 - grid
 - libcoin
 - mvtnorm
 - Formula
+- See https://cran.r-project.org/web/packages/quint/index.html for the full list of dependencies. 
 
 4) for Virtual Twins
 - aVirtualTwins (and all dependencies specified in its document)
+- See https://cran.r-project.org/web/packages/aVirtualTwins/index.html; 
 
 5) for SIDES
 - rsides (and all dependencies specified in its document)
+- See https://cran.r-project.org/web/packages/rsides/ for the full list of dependencies.
 
 6) for Causal Tree
 - causalTree (and all dependencies specified in its document)
+- See https://github.com/susanathey/causalTree for dependencies. 
 
 7) for Distill Tree
 - The source code is released at https://tiffanymtang.github.io/causalDT/index.html;
@@ -55,9 +64,33 @@ Further, the following packages are required to run the code for Distill Tree:
 - R.utils
 - grf
 
-8) Interation Trees
-[HERE]
+8) Interaction Tree
+- This R package is not available on CRAN, and the source code is released by the author. 
+- See https://drive.google.com/file/d/1XUIWapeSE3m5VdteTxmyYgSP3A3eeNy4/view; 
+- The implementation is in Functions-IT.R. 
 
 
+Python baseline: 
+- CURLS: we directly work with the source code released from the original author. 
+- Depending on the settings, you might need to add the following at the beginning of the code:
+sys.path.append('./CURLS/osfstorage-archive/')
+sys.path.append('./CURLS/osfstorage-archive/pipeline/')
+
+
+- The dependencies can be found at: https://osf.io/zwp2k/
+- Note that CURLS is quite slow (we had to use linux servers to run the experiments in parrallel.)
+
+- the main code can be found in the folder "./curls/osfstorage-archive/pipeline/"
+- the requirements.txt in curls/osfstorage-archive/ is the requirement file from the original authors. We also export our pip installed packages in the file 
+"curls/osfstorage-archive/pipeline/our_requirements.txt"
+
+- For the semi-synthetic datasets, you can run the code by using the command:
+python run_semi.py
+or, you can also fully specify the path for the semi-synthetic dataset by
+python run_semi.py --data_path ../../../datasets/semi_synthetic/ACIC2016_1.csv
+
+- Similarly, for the synthetic datasets, you can run the code by
+python run_synthetic.py, or
+python run_synthetic.py --data_path ../../../datasets/synthetic/simulate1/n_1000_iter_1.csv
 
 

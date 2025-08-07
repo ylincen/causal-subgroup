@@ -1,0 +1,9 @@
+data1
+CT, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+CRE, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+CF, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+RIPPER, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+BRCG, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+DT, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+PYS, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.05 
+CURLS, sys_data1.csv, X1 X2 X3 X4 X5 X6 X7 X8 X9 X10, t, y, True, num_rules_to_find=2 rules_least_cov_ratio=0.03 variance_weight=0.43 num_thresh=14 max_rule_length=6
