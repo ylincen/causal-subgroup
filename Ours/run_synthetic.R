@@ -25,6 +25,10 @@ tree_jaccard = rep(0, num_exp_res)
 rsides_jaccard = rep(0, num_exp_res)
 rsides_max_te = rep(0, num_exp_res)
 counter = 0
+estimated_te_of_gt_subgroup = rep(0, num_exp_res)
+gt_te_of_gt_subgroup = rep(0, num_exp_res)
+estimated_te_of_learned_subgroup = rep(0, num_exp_res)
+gt_te_of_learned_subgroup = rep(0, num_exp_res)
 
 full_results = data.frame(
   simulator_name = rep("", num_exp_res),
@@ -33,10 +37,12 @@ full_results = data.frame(
   tree_jaccard = tree_jaccard,
   tree_max_te = tree_max_te,
   gt_te = gt_te,
-  tree_diff_te = rep(0, num_exp_res)
+  tree_diff_te = rep(0, num_exp_res),
+  gt_te_of_gt_subgroup = gt_te_of_gt_subgroup,
+  estimated_te_of_gt_subgroup = estimated_te_of_gt_subgroup,
+  gt_te_of_learned_subgroup = gt_te_of_learned_subgroup,
+  estimated_te_of_learned_subgroup = estimated_te_of_learned_subgroup
 )
-
-
 
 
 for(simulator_name in simulator_names){
@@ -56,6 +62,9 @@ for(simulator_name in simulator_names){
       gt_max_bool = get_gt_bool(d_test, simulator_name)
       gt_te[counter] =
         mean(d_test$Y[gt_max_bool & (d_test$T == 1)]) - mean(d_test$Y[gt_max_bool & (d_test$T == 0)])
+      
+      gt_te_theoretical_per_sample = gt_te_per_sample(d_test, simulator_name)
+      gt_te_of_gt_subgroup = mean(gt_te_theoretical_per_sample[gt_max_bool])
       
       
       
@@ -142,10 +151,22 @@ for(simulator_name in simulator_names){
       tree_max_te = tree_treatment_effects[which_max]
       # jaccard for that subgroup
       jaccard_similarity = sum(gt_max_bool & tree_max_sg_bool) / sum(gt_max_bool | tree_max_sg_bool)
-      full_results[counter, ] = list(simulator_name, n, iter_, 
-                                     jaccard_similarity, tree_max_te, gt_te[counter],
-                                     tree_diff_te = abs(tree_max_te - gt_te[counter])) 
       
+      gt_te_of_learned_subgroup_ = mean(gt_te_theoretical_per_sample[tree_max_sg_bool])
+      gt_te_of_gt_subgroup_ = mean(gt_te_theoretical_per_sample[gt_max_bool])
+      estimated_te_of_learned_subgroup_ = mean(d_test$Y[tree_max_sg_bool & (d_test$T == 1)]) - 
+        mean(d_test$Y[tree_max_sg_bool & (d_test$T == 0)])
+      estimated_te_of_gt_subgroup_ = mean(d_test$Y[gt_max_bool & (d_test$T == 1)]) -
+        mean(d_test$Y[gt_max_bool & (d_test$T == 0)])
+      full_results[counter, ] = 
+        list(simulator_name, n, iter_, 
+             jaccard_similarity, tree_max_te, gt_te[counter],
+             tree_diff_te = abs(tree_max_te - gt_te[counter]),
+             gt_te_of_gt_subgroup = gt_te_of_gt_subgroup_,
+             estimated_te_of_gt_subgroup = estimated_te_of_gt_subgroup_,
+             gt_te_of_learned_subgroup = gt_te_of_learned_subgroup_,
+             estimated_te_of_learned_subgroup = estimated_te_of_learned_subgroup_
+             ) 
       
       print(full_results[counter, ,drop=F])
     }
