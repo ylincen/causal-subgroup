@@ -62,8 +62,8 @@ for(simulator_name in simulator_names){
       ## Second step : find rules in data 
       vt.trees <- vt.tree(tree.type = tree_type,
                           vt.difft  = vt.for, 
-                          threshold = quantile(vt.for$difft, seq(.5,.8,.1)),
-                          maxdepth  = ncol(d) - 2)
+                          threshold = quantile(vt.for$difft, seq(.5,.8,.1))
+                          )
       ## Print results
       vt.sbgrps <- vt.subgroups(vt.trees)
       
@@ -77,7 +77,7 @@ for(simulator_name in simulator_names){
       
       treatment_effects = rep(-Inf, length(vt.sbgrps$Subgroup))
       for(i in 1:length(vt.sbgrps$Subgroup)){
-        sg = vt.sbgrps$Subgroup[1]
+        sg = vt.sbgrps$Subgroup[i]
         items = strsplit(sg, " & ")[[1]]
         bool_test = rep(T, nrow(d_test))
         for(j in 1:length(items)){
