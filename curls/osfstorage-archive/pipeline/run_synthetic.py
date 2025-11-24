@@ -137,6 +137,49 @@ def get_ground_truth_subgroup_bool(df, simulator_name):
         raise ValueError("Unknown simulator name")
 
 
+def gt_te_per_sample(d, simulator_name):
+    """
+    Calculate ground truth treatment effect per sample.
+    
+    Parameters:
+    -----------
+    d : pandas.DataFrame
+        DataFrame containing covariates X1, X2, X3
+    simulator_name : str
+        Name of the simulator ("simulate1", "simulate_imbalance_treatment", or "simulate_long_rule")
+    
+    Returns:
+    --------
+    numpy.ndarray
+        Array of treatment effects (tau) for each sample
+    """
+    if simulator_name in ["simulate1", "simulate_imbalance_treatment"]:
+        # Same outcome mechanism; only treatment assignment differs.
+        mu1 = np.where(d['X1'] > 1, 0.8, 0.2)   # E[Y | T=1, X]
+        mu0 = np.where(d['X1'] < -1, 0.75, 0.2) # E[Y | T=0, X]
+        tau = mu1 - mu0
+        return tau
+    
+    elif simulator_name == "simulate_long_rule":
+        # Recreate the rules exactly as in the simulator
+        rule1 = (d['X1'] > -1) & (d['X2'] > -1) & (d['X3'] > -1)
+        rule2 = (d['X1'] > -1) & (d['X2'] > -1) & (~rule1)
+        rule3 = (d['X1'] > -1) & (~rule1) & (~rule2)
+        
+        # E[Y | T=1, X] by rule; baseline is 0.2 when no rule fires
+        mu1 = np.where(rule1, 0.8,
+                      np.where(rule2, 0.6,
+                              np.where(rule3, 0.4, 0.2)))
+        
+        # Under T=0 everything is baseline 0.2 in this simulator
+        mu0 = np.full(len(d), 0.2)
+        
+        tau = mu1 - mu0
+        return tau
+    
+    else:
+        raise ValueError(f"Unknown simulator_name: {simulator_name}")
+
 def fit_curls(train_df, test_df, simulator_name):
     colnames = train_df.columns.tolist()
     covariates = [col for col in colnames if col not in ['t', 'y', "wt",  "TE"]]
@@ -182,20 +225,25 @@ def fit_curls(train_df, test_df, simulator_name):
     gt_bool = get_ground_truth_subgroup_bool(test_df, simulator_name)  # change this to the appropriate simulator name
 
     treatment_effect_estimated = np.mean(test_df.loc[mask_t1, 'y']) - np.mean(test_df.loc[mask_t0, 'y'])
-    treatment_effect_gt = np.mean(test_df.loc[gt_bool, 'y'])
-    treatment_effect_gt_var = np.var(test_df.loc[gt_bool, 'y'])
-    diff_gt_estimated = treatment_effect_gt - treatment_effect_estimated
 
     jaccard_sim = np.sum(mask & gt_bool) / np.sum(mask | gt_bool) if np.sum(mask | gt_bool) > 0 else 0
 
+    theoretical_gt_te_per_sample = gt_te_per_sample(test_df, simulator_name)
+    gt_te_of_gt_subgroup_ = np.mean(theoretical_gt_te_per_sample[gt_bool])
+    gt_te_of_learned_subgroup_ = np.mean(theoretical_gt_te_per_sample[mask])
+    estimated_te_of_learned_subgroup_ = treatment_effect_estimated
+    estimated_te_of_gt_subgroup_ = np.mean(test_df.loc[gt_bool & (test_df['t'] == 1), 'y']) - np.mean(test_df.loc[gt_bool & (test_df['t'] == 0), 'y'])
+
     return {
         'treatment_effect_estimated': treatment_effect_estimated,
-        'treatment_effect_gt': treatment_effect_gt,
-        'treatment_effect_gt_var': treatment_effect_gt_var,
-        'diff_gt_estimated': diff_gt_estimated,
         'train_time': train_time,
-        'jaccard_similarity': jaccard_sim
+        'jaccard_similarity': jaccard_sim,
+        'gt_te_of_gt_subgroup': gt_te_of_gt_subgroup_,
+        'gt_te_of_learned_subgroup': gt_te_of_learned_subgroup_,
+        'estimated_te_of_learned_subgroup': estimated_te_of_learned_subgroup_,
+        'estimated_te_of_gt_subgroup': estimated_te_of_gt_subgroup_
     }
+
 
 if __name__ == '__main__':
     import argparse
