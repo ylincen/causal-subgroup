@@ -29,7 +29,11 @@ full_results = data.frame(
   jaccard = jaccard,
   max_te = max_te,
   gt_te = gt_te_init,
-  diff_te = rep(0, num_exp_res)
+  diff_te = rep(0, num_exp_res),
+  gt_te_of_gt_subgroup = rep(0, num_exp_res),
+  estimated_te_of_gt_subgroup = rep(0, num_exp_res),
+  gt_te_of_learned_subgroup = rep(0, num_exp_res),
+  estimated_te_of_learned_subgroup = rep(0, num_exp_res)
 )
 
 
@@ -112,9 +116,16 @@ for(simulator_name in simulator_names){
       which_max = which.max(treatment_effects)
       jaccard_similarity = sum(gt_bool & max_sg_bool) / sum(gt_bool | max_sg_bool)
 
+      # full_results[counter, ] = list(simulator_name, n, iter_, jaccard_similarity, 
+      #                                treatment_effects[which_max], gt_te,
+      #                                diff_te = abs(treatment_effects[which_max] - gt_te))
       full_results[counter, ] = list(simulator_name, n, iter_, jaccard_similarity, 
                                      treatment_effects[which_max], gt_te,
-                                     diff_te = abs(treatment_effects[which_max] - gt_te))
+                                     diff_te = abs(treatment_effects[which_max] - gt_te),
+                                     gt_te_of_gt_subgroup = gt_te_of_gt_subgroup_,
+                                     estimated_te_of_gt_subgroup = estimated_te_of_gt_subgroup_,
+                                     gt_te_of_learned_subgroup = gt_te_of_learned_subgroup_,
+                                     estimated_te_of_learned_subgroup = estimated_te_of_learned_subgroup_)
     }
     full_results$jaccard = round(full_results$jaccard, 3)
     full_results$max_te = round(full_results$max_te, 3)
