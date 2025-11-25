@@ -31,7 +31,11 @@ full_results = data.frame(
   jaccard = jaccard,
   max_te = max_te,
   gt_te = gt_te_init,
-  diff_te = rep(0, num_exp_res)
+  diff_te = rep(0, num_exp_res), 
+  gt_te_of_gt_subgroup = rep(0, num_exp_res),
+  estimated_te_of_gt_subgroup = rep(0, num_exp_res),
+  gt_te_of_learned_subgroup = rep(0, num_exp_res),
+  estimated_te_of_learned_subgroup = rep(0, num_exp_res)
 )
 
 
@@ -130,17 +134,26 @@ for(simulator_name in simulator_names){
       jaccard_similarity = sum(gt_max_bool & tree_max_sg_bool) / sum(gt_max_bool | tree_max_sg_bool)
       
       
+      gt_te_theoretical_per_sample = gt_te_per_sample(d_test, simulator_name)
+      gt_te_of_gt_subgroup_ = mean(gt_te_theoretical_per_sample[gt_max_bool])
+      gt_te_of_learned_subgroup_ = mean(gt_te_theoretical_per_sample[tree_max_sg_bool])
+      estimated_te_of_learned_subgroup_ = mean(d_test$Y[tree_max_sg_bool & (d_test$T == 1)]) - 
+        mean(d_test$Y[tree_max_sg_bool & (d_test$T == 0)])
+      estimated_te_of_gt_subgroup_ = mean(d_test$Y[gt_max_bool & (d_test$T == 1)]) -
+        mean(d_test$Y[gt_max_bool & (d_test$T == 0)])
+      
       
       full_results[counter, ] = list(simulator_name, n, iter_, jaccard_similarity, 
                                      tree_treatment_effects[which_max], gt_te,
-                                     diff_te = abs(tree_treatment_effects[which_max] - gt_te)
+                                     diff_te = abs(tree_treatment_effects[which_max] - gt_te),
+                                     gt_te_of_gt_subgroup=gt_te_of_gt_subgroup_,
+                                     estimated_te_of_gt_subgroup=estimated_te_of_gt_subgroup_,
+                                     gt_te_of_learned_subgroup=gt_te_of_learned_subgroup_,
+                                     estimated_te_of_learned_subgroup=estimated_te_of_learned_subgroup_
                                      )
+                                     
     }
-    full_results$jaccard = round(full_results$jaccard, 3)
-    full_results$max_te = round(full_results$max_te, 3)
-    full_results$max_te = round(full_results$max_te, 3)
-    full_results$gt_te = round(full_results$gt_te, 3)
-    full_results$diff_te = round(full_results$diff_te, 3)
+
     
     write.csv(full_results, "res_CausalTree_simulation.csv", row.names = FALSE)
   }
@@ -157,4 +170,4 @@ summary_res = full_res_dt[, .(
   mean_diff_te = mean(diff_te)
 ), by = .(simulator_name, n)]
 
-write.csv(summary_res, "summary_res_quint_simulations.csv", row.names = FALSE)
+write.csv(summary_res, "summary_res_CausalTree_simulations.csv", row.names = FALSE)
