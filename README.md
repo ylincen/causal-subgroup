@@ -1,7 +1,31 @@
 
 # Environment & Baseline Notes
 
-**Summary**
+## Our Method
+
+This repository contains the official implementation for the paper *“Learning Subgroups with Maximum Treatment Effects without Causal Heuristics”*.  
+
+Our method is built on a simple theoretical insight: **under a partition-based structural causal model, the subgroup with the maximum treatment effect is exactly one of the underlying partitions.**
+
+This allows us to avoid specialized causal heuristics entirely. The algorithm is:
+
+1. Learn a standard CART partition of the feature space (classification or regression).  
+2. Estimate subgroup treatment effects honestly on a held-out test split.  
+3. Select the leaf with the largest estimated effect.
+
+This pipeline is **theoretically justified, interpretable, and empirically strong**.
+
+```bibtex
+@inproceedings{yang2026maximumeffect,
+  title={Learning Subgroups with Maximum Treatment Effects without Causal Heuristics},
+  author={Yang, Lincen and Li, Zhong and van Leeuwen, Matthijs and Salehkaleybar, Saber},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  year={2026}
+}
+```
+
+
+## Implementation Summary
 
 * Our method is implemented in **R**.  
 * The baselines are a mix of **R** and **Python** code.  
