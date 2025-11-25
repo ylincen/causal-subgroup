@@ -73,7 +73,8 @@ get_subgroup_bool = function(dd, rsides_results, gt_max_bool){
   jaccard_similarity = sum(gt_max_bool & max_sg_bool) / sum(gt_max_bool | max_sg_bool)
   return(list(
     jaccard_similarity = jaccard_similarity,
-    treatment_effect = treatment_effects[which_max]
+    treatment_effect = treatment_effects[which_max],
+    max_sg_bool = max_sg_bool
   )
   )
 }
@@ -100,7 +101,11 @@ full_results = data.frame(
   rsides_jaccard = rsides_jaccard,
   rsides_max_te = rsides_max_te,
   gt_te = gt_te,
-  rsides_diff_te = rep(0, num_exp_res)
+  rsides_diff_te = rep(0, num_exp_res),
+  gt_te_of_gt_subgroup = rep(0, num_exp_res),
+  estimated_te_of_gt_subgroup = rep(0, num_exp_res),
+  gt_te_of_learned_subgroup = rep(0, num_exp_res),
+  estimated_te_of_learned_subgroup = rep(0, num_exp_res)
 )
 
 
@@ -164,20 +169,28 @@ for(simulator_name in simulator_names){
         mean(d_test$Y[gt_max_bool & (d_test$T == 1)]) - mean(d_test$Y[gt_max_bool & (d_test$T == 0)])
   
       
-      
-      
+            gt_te_theoretical_per_sample = gt_te_per_sample(d_test, simulator_name)
+      gt_te_of_gt_subgroup_ = mean(gt_te_theoretical_per_sample[gt_max_bool])
+      gt_te_of_learned_subgroup_ = mean(gt_te_theoretical_per_sample[res_list$max_sg_bool])
+      estimated_te_of_gt_subgroup_ =
+        mean(d_test$Y[gt_max_bool & (d_test$T == 1)]) - mean(d_test$Y[gt_max_bool & (d_test$T == 0)])
+      estimated_te_of_learned_subgroup_ = 
+        mean(d_test$Y[res_list$max_sg_bool & (d_test$T == 1)]) - mean(d_test$Y[res_list$max_sg_bool & (d_test$T == 0)])
+
+      diff_gt_te = abs(gt_te_of_gt_subgroup_ - gt_te_of_learned_subgroup_)
+      diff_estimated_te = 
+        abs(estimated_te_of_gt_subgroup_ - estimated_te_of_learned_subgroup_)
       
       full_results[counter, ] = list(simulator_name, n, iter_, res_list$jaccard_similarity, 
-                                  res_list$treatment_effect, gt_te[counter],
-                                  rsides_diff_te = abs(res_list$treatment_effect - gt_te[counter])
-                                  )
+                                     res_list$treatment_effect, gt_te[counter],
+                                     rsides_diff_te = abs(res_list$treatment_effect - gt_te[counter]),
+                                     gt_te_of_gt_subgroup = gt_te_of_gt_subgroup_,
+                                     estimated_te_of_gt_subgroup = estimated_te_of_gt_subgroup_,
+                                     gt_te_of_learned_subgroup = gt_te_of_learned_subgroup_,
+                                     estimated_te_of_learned_subgroup = estimated_te_of_learned_subgroup_
+      )
       print(full_results[counter, ,drop=F])
     }
-    # round up and save the results
-    full_results$rsides_jaccard = round(full_results$rsides_jaccard, 3)
-    full_results$rsides_max_te = round(full_results$rsides_max_te, 3)
-    full_results$gt_te = round(full_results$gt_te, 3)
-    full_results$rsides_diff_te = round(full_results$rsides_diff_te, 3)
     
     write.csv(full_results, "res_SIDES.csv", row.names = FALSE)
   }
